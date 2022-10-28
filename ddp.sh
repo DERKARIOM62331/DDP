@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Le manuel de Derkariom depot des projet(DDP)
 manuel()
 {
@@ -16,14 +15,10 @@ manuel()
     echo -e "ddp projet -o | out -> POUR COMPILE UN PROJET\n"
     echo -e "ddp projet -ox | xout -> POUR COMPILE ET EXECUTER UN PROJET\n"
 }
-free_err()
-{
-    if [ -e "tmp-$$.txt" ] ; then rm tmp-$$.txt ; fi
-}
 declare -i k
 declare -i i
 repa=$(pwd) # pour sauvegarde le repertoir actuelle avant l' appelle de la commande
-cd ~/       # pour ce rendre au repertoire utilisateurs
+cd ~/      # pour ce rendre au repertoire utilisateurs
 
 # Creation du repertoire .ddp dans le repertoire utilisateurs s'il n'exist pas
 if [ ! -d ".ddp" ]  ; then
@@ -42,15 +37,15 @@ if [ $# -eq 0 ] ; then
     echo "ERREUR-> AUCUN PARAMETRE"
 
 # -v pour voir la version de Derkariom depot de projet (DDP)
-elif [ $1 = "-v" -o $1 == "--version" ] ; then
+elif [ "$1" = "-v" -o "$1" == "--version" ] ; then
     echo "DERKARIOM DEPOT DES PROJET VERSION 1.9 BETA :)"
 
 # pour visiter le manuel de Derkariom depot des projet (DDP)
-elif [ $1 == "-h" -o $1 == "--help" ] ; then
+elif [ "$1" == "-h" -o "$1" == "--help" ] ; then
     manuel | less
 
 # Syntax: ddp new | add : pour cree un nauvaut projet
-elif [ $1 = "new" -o $1 = "add" ] ; then
+elif [ "$1" = "new" -o "$1" = "add" ] ; then
 # new est une variable qui prent le nom du projet
 # chemin est une variable qui prent le chemin du repertoire du projet de base
 # compiler est une variable qui prent le code de compilation du projet
@@ -59,10 +54,10 @@ elif [ $1 = "new" -o $1 = "add" ] ; then
     k=0
     until [ $k -lt 0 ]
     do
-        read -p "NOM DU NOUVEAU PROJET:" new
+        read -p "NOM DU NOUVEAU PROJET : " new
         cd ~/.ddp/ddp-projet
         if [ -e "$new" ] ; then
-            echo -e "\nERREUR->${new^^} : CE PROJET EXISTE !\n"
+            echo -e "\nERREUR -> ${new^^} : CE PROJET EXISTE !\n"
         else
             k=-1 # Cas d' arret de la boucle until
         fi
@@ -70,10 +65,9 @@ elif [ $1 = "new" -o $1 = "add" ] ; then
 k=0
 until [ $k -lt 0 ]
 do
-    read -p "CHEMIN DU PROJET:" chemin
-    echo $chemin
-    cd "$chemin" 2> tmp-$$.txt
-    if [ $? -eq 0 ] ; then
+    read -p "CHEMIN DU PROJET : " chemin
+    cd "$chemin" 2> /dev/null
+    if [ "$?" -eq 0 ] ; then
         k=-1  # Cas d' arret de la boucle until
     else
         echo -e "\n${chemin^^} EST INTROVABLE!\n"
@@ -81,50 +75,46 @@ do
 done
     read -p "CODE DE CONPILATION:" compiler
     read -p "CODE D' EXECUTION:" execution
-    i=0
-    cd ~/.ddp/ddp-projet ; mkdir $new #Creation du basse de donne du project
-    if [ $? -eq 0 ] ; then 
-        i=i+1 ; 
-        echo $chemin > $new/chemin.txt ; if [ $? -eq 0 ] ; then i=i+1 ; fi #Pour redirectionner le chemin du projet dans un ficher
-        echo $compiler > $new/compiler.txt ; if [ $? -eq 0 ] ; then i=i+1 ; fi #Pour redirectionner le code de compilation du projet dans un ficher
-        echo $execution > $new/execution.txt ; if [ $? -eq 0 ] ; then i=i+1 ; fi #Pour redirectionner le code d' execution du projet dans un ficher
+    cd ~/.ddp/ddp-projet ; mkdir "$new" #Creation du basse de donne du project
+    if [ "$?" -eq 0 ] ; then 
+        echo "$chemin" > "$new"/chemin.txt
+        if [ "$compiler" != "" ] ; then
+            echo "$compiler" > "$new"/compiler.txt
+        fi
+        if [ "$execution" != "" ] ; then
+            echo "$execution" > "$new"/execution.txt
+        fi
    fi  
-   if [ $i -eq 4 ] ; then
-        echo "SUCCES :)"
-    else
-        echo "ECHEC !"
-    fi
 
 # Syntax: ddp log : pour lister toute les depot
-elif [ $1 == "log" -a $# -eq 1 ] ; then
-    cd ~/.ddp/ddp-projet 2> tmp-$$.txt
-    if [ $? -eq 0 ] ; then
+elif [ "$1" == "log" -a "$#" -eq 1 ] ; then
+    cd ~/.ddp/ddp-projet 2> /dev/null
+    if [ "$?" -eq 0 ] ; then
         echo -e "\t\tLISTE DES PROJET\n"
         i=1
         for pro in *
         {
-            if [ -d $pro ] ; then
+            if [ -d "$pro" ] ; then
                 echo -e "\n$i -> ${pro}"
                 i=i+1
             fi
         } 
     else
         echo "ECHEC !"
-    fi ; if [ -e "tmp-$$.txt" ] ; then rm tmp-$$.txt ; fi
+    fi
 
 # Syntax: ddp del <projet> : pour suprimer le depot d' un projet 
-elif [ $1 == "del" -a $# -eq 2 ] ; then
-    cd ~/.ddp/ddp-projet
-    if [ $? -eq 0 ] ; then
-        if [ -e $2 ] ; then
-            rm -r $2
-            echo "SUCCES :)"
+elif [ "$1" == "del" -a "$#" -eq 2 ] ; then
+    cd ~/.ddp/ddp-projet 2> /dev/null
+    if [ "$?" -eq 0 ] ; then
+        if [ -e "$2" ] ; then
+            rm -r "$2"
         else
             echo "ECHEC -> ${2^^} N' EXISTE PAS !"
         fi
     else
         echo "ECHEC !"
-    fi ; if [ -e "tmp-$$.txt" ] ; then rm tmp-$$.txt ; fi
+    fi
 
 # Syntax: ddp update : pour install DDP comme commande systemes
 elif [ $1 == "update" ]  ; then
@@ -140,20 +130,20 @@ elif [ $1 == "update" ]  ; then
     echo "SUCCES :)"
 
 # Syntax: ddp code <projet> : pour ouvrire le projet via VSCODE
-elif [ $1 == "code" ] ; then
-    cd ~/.ddp/ddp-projet/$2 2> tmp-$$.txt # pour ce rendre dans la base de donne du projet
-    if [ $? -eq 0 ] ; then
+elif [ "$1" == "code" ] ; then
+    cd ~/.ddp/ddp-projet/"$2" 2> /dev/null # pour ce rendre dans la base de donne du projet
+    if [ "$?" -eq 0 ] ; then
         i=0
-        rep=$(cat chemin.txt) ; if [ $? -eq 0 ] ; then i=i+1 ; fi # pour stoker le chemin du projet dans une variable(rep)
-        code "$rep" ; if [ $? -eq 0 ] ; then i=i+1 ; fi # pour ouvrire le project avec VSCODE
-        if [ $i -eq 2 ] ; then
+        rep=$(cat chemin.txt) ; if [ "$?" -eq 0 ] ; then i=i+1 ; fi # pour stoker le chemin du projet dans une variable(rep)
+        code "$rep" ; if [ "$?" -eq 0 ] ; then i=i+1 ; fi # pour ouvrire le project avec VSCODE
+        if [ "$i" -eq 2 ] ; then
             echo "SUCCES :)"
         else
            echo "ECHEC !"
         fi
     else
-        echo "ECHEC !"
-    fi ; if [ -e "tmp-$$.txt" ] ; then rm tmp-$$.txt ; fi
+        echo "ECHEC !" 
+    fi
 
 # Syntax: ddp <projet> -ox | xout : Comilation + execution du projet
 elif [ "$2" == "-ox" -o "$2" == "xout" ] ; then # -c pour pour compiler le projet 
@@ -174,20 +164,20 @@ elif [ "$2" == "-ox" -o "$2" == "xout" ] ; then # -c pour pour compiler le proje
     fi ; if [ -e "tmp-$$.txt" ] ; then rm tmp-$$.txt ; fi
 
 # Syntax: ddp run | -x <projet> : pour executer le projet
-elif [ $1 == "run" ] || [ $1 == "-x" ]; then
-    cd ~/.ddp/ddp-projet/$2/ 2> tmp-$$.txt # pour ce rendre dans la base de donne du projet
-    if [ $? -eq 0 ] ; then
+elif [ "$1" == "run" ] || [ "$1" == "-x" ]; then
+    cd ~/.ddp/ddp-projet/"$2"/ 2> /dev/null # pour ce rendre dans la base de donne du projet
+    if [ "$?" -eq 0 ] ; then
         i=0
         rep=$(cat chemin.txt) ; if [ $? -eq 0 ] ; then i=i+1 ; fi # pour stoker le chemain du projet dans une variable
         execution=$(cat execution.txt) ; if [ $? -eq 0 ] ; then i=i+1 ; fi # pour stoker le code d' execution dans une variable
-        cd "$rep" 2> tmp-$$.txt ; if [ $? -eq 0 ] ; then i=i+1 ; fi # pour ce rendre dans le repertoire du projet
+        cd "$rep" 2> /dev/null ; if [ $? -eq 0 ] ; then i=i+1 ; fi # pour ce rendre dans le repertoire du projet
         $execution # pour executer le projet
-        if [ $i -ne 3 ] ; then
+        if [ "$i" -ne 3 ] ; then
            echo "ECHEC !"
         fi
     else
         echo "ECHEC !"
-    fi ; if [ -e "tmp-$$.txt" ] ; then rm tmp-$$.txt ; fi
+    fi
 
 # Syntax: ddp <nom_projet> <chemin_projet> add | new : pour cree un depot du chemin de votre projet
 elif [ "$3" == "new" ] || [ "$3" == "add" ] ; then
@@ -244,4 +234,3 @@ elif [ "$4" == "new" ] || [ "$4" == "add" ] ; then
 else
     manuel | less
 fi
-free_err
