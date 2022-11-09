@@ -6,16 +6,16 @@ manuel()
     echo -e "\n\nLEGANT: OU(|) ET(&)\n"
     echo -e "\n\nddp -v | --version -> POUR AFFICHER LA VERSION DE DDP\n"
     echo -e "ddp new | add -> POUR AJOUTER UN NOUVEAU PROJET\n"
-    echo -e "ddp add <nom_projet> <chemin_projet>  -> POUR CREE UN DEPOT DU CHEMIN DE VOTRE PROJET\n"
-    echo -e "ddp add <nom_projet> <chemin_projet> <code_compiler> <code_execution>  -> POUR CREE UN DEPOT DE VOTRE PROJET\n"
-    echo -e "ddp log -> POUR LISTE LES PROJET SUR DDP\n"
-    echo -e "ddp del <nom_projet> -> POUR SUPPRIME UN PROJET\n"
-    echo -e "ddp code <projet> -> POUR OUVRIRE LE PROJET AVEC VSCODE\n"
+    echo -e "ddp add <nom_projet> <chemin_projet>  -> POUR CREER UN DEPOT DU CHEMIN DE VOTRE PROJET\n"
+    echo -e "ddp add <nom_projet> <chemin_projet> <code_compiler> <code_execution>  -> POUR CREER UN DEPOT DE VOTRE PROJET\n"
+    echo -e "ddp log -> POUR LISTER LES PROJETS SUR DDP\n"
+    echo -e "ddp del <nom_projet> -> POUR SUPPRIMER UN PROJET\n"
+    echo -e "ddp code <projet> -> POUR OUVRIR LE PROJET AVEC VSCODE\n"
     echo -e "ddp run <projet> -> POUR EXECUTER UN PROJET\n"
-    echo -e "ddp out <nom_projet> -> POUR COMPILE VOTRE PROJET\n"
-    echo -e "ddp xout <nom_projet> -> POUR COMPILE ET EXECUTER VOTRE PROJET\n"
-    echo -e "ddp projet -o -> POUR COMPILE UN PROJET\n"
-    echo -e "ddp projet -ox -> POUR COMPILE ET EXECUTER VOTRE PROJET\n"
+    echo -e "ddp out <nom_projet> -> POUR COMPILER VOTRE PROJET\n"
+    echo -e "ddp xout <nom_projet> -> POUR COMPILER ET EXECUTER VOTRE PROJET\n"
+    echo -e "ddp projet -o -> POUR COMPILER UN PROJET\n"
+    echo -e "ddp projet -ox -> POUR COMPILER ET EXECUTER VOTRE PROJET\n"
 }
 declare -i k
 declare -i i
@@ -135,6 +135,22 @@ elif [ "$1" == "code" ] ; then
         i=0
         rep=$(cat chemin.txt) ; if [ "$?" -eq 0 ] ; then i=i+1 ; fi # pour stoker le chemin du projet dans une variable(rep)
         code "$rep" ; if [ "$?" -eq 0 ] ; then i=i+1 ; fi # pour ouvrire le project avec VSCODE
+        if [ "$i" -eq 2 ] ; then
+            echo "SUCCES :)"
+        else
+           echo "ECHEC !"
+        fi
+    else
+        echo "ECHEC !" 
+    fi
+
+# Syntax: ddp code <projet> : pour ouvrire le projet via VSCODE
+elif [ "$1" == "open" ] ; then
+    cd ~/.ddp/ddp-projet/"$2" 2> /dev/null # pour ce rendre dans la base de donne du projet
+    if [ "$?" -eq 0 ] ; then
+        i=0
+        rep=$(cat chemin.txt) ; if [ "$?" -eq 0 ] ; then i=i+1 ; fi # pour stoker le chemin du projet dans une variable(rep)
+        open "$rep" ; if [ "$?" -eq 0 ] ; then i=i+1 ; fi # pour ouvrire le project avec VSCODE
         if [ "$i" -eq 2 ] ; then
             echo "SUCCES :)"
         else
