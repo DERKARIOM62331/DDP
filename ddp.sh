@@ -22,6 +22,11 @@ declare -i i
 repa=$(pwd) # pour sauvegarde le repertoir actuelle avant l' appelle de la commande
 cd ~/      # pour ce rendre au repertoire utilisateurs
 
+grep go ~/.bashrc
+if [ "$?" != 0 ] ; then
+    echo "alias go='. go'" >> .bashrc
+fi
+
 # Creation du repertoire .ddp dans le repertoire utilisateurs s'il n'exist pas
 if [ ! -d ".ddp" ]  ; then
     mkdir .ddp
