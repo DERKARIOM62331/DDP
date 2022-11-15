@@ -22,7 +22,7 @@ declare -i i
 repa=$(pwd) # pour sauvegarde le repertoir actuelle avant l' appelle de la commande
 cd ~/      # pour ce rendre au repertoire utilisateurs
 
-grep go ~/.bashrc
+grep go ~/.bashrc >> /dev/null
 if [ "$?" != 0 ] ; then
     echo "alias go='. go'" >> .bashrc
 fi
